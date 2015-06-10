@@ -117,6 +117,22 @@ ThreadStore.dispatchToken = ChatAppDispatcher.register(function(action) {
       ThreadStore.emitChange();
       break;
 
+    case ActionTypes.CREATE_MESSAGE:
+      // Circular dependency. If we put this at the beginning of this module
+      // then MessageStore will be an empty object
+      var MessageStore = require('../stores/MessageStore');
+
+      // This makes sure MessageStore consumed CREATE_MESSAGE message
+      // and added new message to the end of the list
+      ChatAppDispatcher.waitFor([MessageStore.dispatchToken]);
+
+      var threadMessages = MessageStore.getAllForCurrentThread();
+      var lastThreadMessage = threadMessages[threadMessages.length - 1];
+      lastThreadMessage.isRead = _currentID == lastThreadMessage.threadID;
+      _threads[_currentID].lastMessage = lastThreadMessage;
+      ThreadStore.emitChange();
+      break;
+
     default:
       // do nothing
   }

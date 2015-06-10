@@ -40,6 +40,7 @@ var MessageSection = React.createClass({
 
   componentDidMount: function() {
     this._scrollToBottom();
+    this._focusMessageComposer();
     MessageStore.addChangeListener(this._onChange);
     ThreadStore.addChangeListener(this._onChange);
   },
@@ -57,13 +58,14 @@ var MessageSection = React.createClass({
         <ul className="message-list" ref="messageList">
           {messageListItems}
         </ul>
-        <MessageComposer threadID={this.state.thread.id}/>
+        <MessageComposer threadID={this.state.thread.id} ref="messageComposer" />
       </div>
     );
   },
 
   componentDidUpdate: function() {
     this._scrollToBottom();
+    this._focusMessageComposer();
   },
 
   _scrollToBottom: function() {
@@ -75,7 +77,11 @@ var MessageSection = React.createClass({
    * Event handler for 'change' events coming from the MessageStore
    */
   _onChange: function() {
-    this.setState(getStateFromStores());
+    this.setState(getStateFromStores(), this._focusMessageComposer);
+  },
+
+  _focusMessageComposer: function() {
+    this.refs.messageComposer.focus();
   }
 
 });

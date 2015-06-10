@@ -28,6 +28,7 @@ var MessageComposer = React.createClass({
   render: function() {
     return (
       <textarea
+        ref="composer"
         className="message-composer"
         name="message"
         value={this.state.text}
@@ -35,6 +36,10 @@ var MessageComposer = React.createClass({
         onKeyDown={this._onKeyDown}
       />
     );
+  },
+
+  focus: function() {
+    React.findDOMNode(this.refs.composer).focus();
   },
 
   _onChange: function(event, value) {
